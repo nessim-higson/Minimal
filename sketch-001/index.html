@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NH — Site Hybrid Sketch 001</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#fbfaf7;
+  --ink:#1c1b18;
+  --mut:#a6a29a;
+  --line:#eceae4;
+  --blue:#1d1df5;
+  --marker:#ffe66e;
+  --footer:#0f0e0c;
+  --col:30rem;
+  --dock-h:64px;
+  --footer-h:420px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Instrument Sans',sans-serif;
+  font-size:15px;line-height:1.55;
+  color:var(--ink);
+  background:var(--footer);
+  padding-bottom:var(--footer-h);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit}
+::selection{background:var(--marker)}
+
+/* ---------- sheet over fixed footer ---------- */
+.sheet{
+  position:relative;z-index:2;
+  background:var(--bg);
+  border-radius:0 0 28px 28px;
+  box-shadow:0 30px 60px rgba(0,0,0,.45);
+  padding-bottom:9rem;
+}
+
+/* ---------- toast ---------- */
+.toast{
+  position:fixed;top:18px;left:50%;z-index:50;
+  transform:translate(-50%,-140%);
+  display:flex;align-items:center;gap:12px;
+  background:#fff;border-radius:16px;
+  padding:10px 22px 10px 12px;
+  box-shadow:0 6px 24px rgba(0,0,0,.09),0 1px 2px rgba(0,0,0,.05);
+  text-decoration:none;
+  transition:transform .8s cubic-bezier(.2,.9,.2,1);
+}
+.toast.in{transform:translate(-50%,0)}
+.toast .av{width:34px;height:34px;border-radius:9px;background:conic-gradient(from 200deg,#bfe8ff,#ffe9b8,#ffd2ec,#bfe8ff)}
+.toast b{display:block;font-size:12.5px;font-weight:600}
+.toast span{display:block;font-size:12.5px;color:var(--mut)}
+
+/* ---------- intro ---------- */
+.intro{
+  max-width:var(--col);
+  margin:0 auto;
+  padding:22vh 24px 0;
+}
+.intro h1{font-size:15px;font-weight:600;letter-spacing:.01em}
+.intro .role{color:var(--mut)}
+.bio{margin-top:2.6em}
+.bio p+p{margin-top:1.4em}
+
+/* growing tokens */
+.w{
+  font-size:15px;opacity:1;filter:blur(0);
+  transition:font-size .45s cubic-bezier(.3,.8,.3,1),opacity .4s,filter .4s;
+  transition-delay:calc(var(--i,0)*14ms);
+}
+.w.hid{font-size:0px;opacity:0;filter:blur(5px);transition-delay:calc(var(--j,0)*6ms)}
+.w.hl{background:linear-gradient(transparent 45%,var(--marker) 45%,var(--marker) 92%,transparent 92%)}
+
+/* inline chips */
+.chip{
+  display:inline-block;vertical-align:-3px;
+  height:18px;line-height:18px;
+  border-radius:5px;padding:0 7px;
+  font-size:11px;font-weight:600;letter-spacing:.02em;
+  color:#fff;text-decoration:none;
+  transition:font-size .45s cubic-bezier(.3,.8,.3,1),opacity .4s,filter .4s,height .45s,padding .45s;
+}
+.chip:hover{transform:translateY(-1px)}
+.w.hid .chip,
+.chip.hid{font-size:0;height:0;padding:0;opacity:0;filter:blur(5px)}
+.chip.iaah{background:#1c1b18}
+.chip.wkndr{background:linear-gradient(120deg,#4f9fe8,#8fd0ff)}
+.chip.fields{background:linear-gradient(120deg,#ff7a59,#e83d8f,#7b3df0)}
+.chip.arena{background:#111;color:var(--marker)}
+
+/* dial hint under bio */
+.dial-hint{
+  margin-top:2.4em;
+  font-size:12.5px;color:var(--mut);
+  display:flex;align-items:center;gap:8px;
+  user-select:none;
+}
+.dial-hint .keys{display:inline-flex;gap:4px}
+.dial-hint kbd{
+  font-family:inherit;font-size:11px;
+  border:1px solid var(--line);border-bottom-width:2px;
+  border-radius:5px;padding:1px 6px;background:#fff;
+}
+
+/* ---------- sections ---------- */
+.label{
+  max-width:var(--col);margin:9rem auto 0;padding:0 24px;
+  font-size:15px;font-weight:600;
+}
+.label small{display:block;font-weight:400;color:var(--mut);font-size:12.5px;margin-top:2px}
+
+/* work scroller */
+.works{
+  margin-top:2.2rem;
+  display:flex;gap:22px;
+  overflow-x:auto;scroll-snap-type:x mandatory;
+  padding:12px calc(50vw - min(46vw,330px)) 32px;
+  scrollbar-width:none;
+  cursor:grab;
+}
+.works::-webkit-scrollbar{display:none}
+.works.drag{cursor:grabbing;scroll-snap-type:none}
+.card{
+  position:relative;flex:0 0 auto;
+  width:min(92vw,660px);height:min(58vw,410px);
+  border-radius:18px;overflow:hidden;
+  scroll-snap-align:center;
+  color:#fff;text-decoration:none;
+  transform:translateY(0);
+  transition:transform .5s cubic-bezier(.2,.9,.2,1),box-shadow .5s;
+  box-shadow:0 2px 6px rgba(0,0,0,.06);
+}
+.card:hover{transform:translateY(-6px);box-shadow:0 18px 44px rgba(0,0,0,.16)}
+.card.pulse{animation:pulse 1.2s ease 2}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(29,29,245,0)}40%{box-shadow:0 0 0 6px rgba(29,29,245,.35)}}
+.card .meta{position:absolute;left:22px;bottom:18px;z-index:2}
+.card .meta b{display:block;font-size:14px;font-weight:600}
+.card .meta span{font-size:13.5px;opacity:.75}
+.card .arrow{position:absolute;top:16px;right:18px;font-size:15px;opacity:.85;z-index:2}
+.card .fill{position:absolute;inset:0}
+
+/* card art — pure CSS */
+.art-wkndr{background:linear-gradient(180deg,#8ecdf3 0%,#c9e9ff 55%,#f6e8c9 100%)}
+.art-wkndr::after{content:'';position:absolute;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,#fff6d8 0%,#ffd977 60%,transparent 61%);
+  top:16%;left:50%;transform:translateX(-50%);filter:blur(1px)}
+.art-fields{background:#0b0a10;overflow:hidden}
+.art-fields::before{content:'';position:absolute;inset:-30%;
+  background:
+    radial-gradient(40% 60% at 30% 40%,rgba(255,122,89,.8),transparent 70%),
+    radial-gradient(50% 50% at 70% 60%,rgba(123,61,240,.7),transparent 70%),
+    radial-gradient(30% 40% at 55% 30%,rgba(232,61,143,.6),transparent 70%);
+  filter:blur(30px)}
+.art-arena{background:#0c0c0c;display:grid;place-items:center}
+.art-arena i{width:150px;height:150px;border-radius:50%;border:2px solid var(--marker);position:relative;display:block}
+.art-arena i::before,.art-arena i::after{content:'';position:absolute;inset:18px;border-radius:50%;border:2px solid var(--marker)}
+.art-arena i::after{inset:38px}
+.art-fovea{background:radial-gradient(circle at 50% 45%,#3d3a4f 0%,#191722 45%,#0b0a10 100%)}
+.art-fovea::after{content:'';position:absolute;inset:0;
+  background:radial-gradient(circle at 50% 45%,transparent 28%,rgba(255,255,255,.06) 29%,transparent 31%,transparent 38%,rgba(255,255,255,.05) 39%,transparent 41%,transparent 50%,rgba(255,255,255,.04) 51%,transparent 53%)}
+.art-coltrane{background:#f4f2ec;
+  background-image:radial-gradient(circle,#c9c5ba 1.4px,transparent 1.5px);
+  background-size:26px 26px}
+.art-coltrane b,.art-coltrane span{color:#1c1b18!important}
+
+/* lists: writing / experiments */
+.tabs{
+  max-width:var(--col);margin:9rem auto 0;padding:0 24px;
+  display:flex;gap:18px;font-size:15px;
+}
+.tabs button{
+  font:inherit;font-weight:600;border:0;background:none;cursor:pointer;
+  color:var(--mut);padding:0;
+}
+.tabs button.on{color:var(--ink)}
+.list{max-width:var(--col);margin:1.6rem auto 0;padding:0 24px}
+.row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:16px;
+  padding:.85em 0;border-bottom:1px solid var(--line);
+  text-decoration:none;
+}
+.row:first-child{border-top:1px solid var(--line)}
+.row b{font-weight:400}
+.row:hover b{text-decoration:underline;text-underline-offset:3px}
+.row span{font-size:12.5px;color:var(--mut);white-space:nowrap}
+
+/* ---------- footer (revealed) ---------- */
+.footer{
+  position:fixed;left:0;right:0;bottom:0;z-index:1;
+  height:var(--footer-h);
+  background:var(--footer);color:#f4f1ea;
+  display:flex;flex-direction:column;justify-content:space-between;
+  padding:56px 8vw calc(var(--dock-h) + 40px);
+}
+.footer .big{
+  font-size:clamp(44px,8vw,110px);
+  font-weight:600;letter-spacing:-.03em;line-height:.95;
+}
+.footer .big em{font-family:'Newsreader',serif;font-style:italic;font-weight:400}
+.footer .cols{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;font-size:13px}
+.footer .cols a{color:#f4f1ea;text-decoration:none;border-bottom:1px solid rgba(244,241,234,.3)}
+.footer .cols a:hover{border-color:#f4f1ea}
+.footer .mut{color:rgba(244,241,234,.45)}
+
+/* ---------- dock ---------- */
+.dock{
+  position:fixed;left:50%;bottom:20px;z-index:60;
+  transform:translateX(-50%);
+  display:flex;align-items:center;gap:10px;
+  background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
+  border-radius:18px;padding:9px;
+  box-shadow:0 10px 40px rgba(0,0,0,.18),0 1px 2px rgba(0,0,0,.06);
+}
+.dock button{
+  width:38px;height:38px;border-radius:11px;border:0;cursor:pointer;
+  background:#151412;color:#fff;font-size:16px;line-height:1;
+  display:grid;place-items:center;
+  transition:transform .15s,opacity .2s;
+}
+.dock button:active{transform:scale(.92)}
+.dock button:disabled{opacity:.25;cursor:default}
+.dots{display:flex;gap:5px;padding:0 2px}
+.dots i{width:5px;height:5px;border-radius:50%;background:#dcd9d2;transition:background .3s}
+.dots i.on{background:#151412}
+.dock .sep{width:1px;height:24px;background:var(--line)}
+.ask{
+  width:190px;transition:width .35s cubic-bezier(.3,.8,.3,1);
+}
+.ask input{
+  width:100%;height:38px;border:0;outline:0;background:transparent;
+  font:inherit;font-size:13.5px;color:var(--ink);
+}
+.ask input::placeholder{color:var(--mut)}
+.ask.wide{width:320px}
+
+/* answer strip */
+.answer{
+  position:fixed;left:50%;bottom:calc(var(--dock-h) + 30px);z-index:59;
+  transform:translate(-50%,12px);
+  max-width:520px;width:max-content;
+  background:#151412;color:#f4f1ea;
+  font-family:'Newsreader',serif;font-style:italic;font-size:16px;
+  padding:12px 20px;border-radius:14px;
+  opacity:0;pointer-events:none;
+  transition:opacity .35s,transform .35s;
+  box-shadow:0 10px 40px rgba(0,0,0,.25);
+}
+.answer.in{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:640px){
+  .ask{width:130px}
+  .ask.wide{width:200px}
+  .footer{padding-inline:24px}
+}
+</style>
+</head>
+<body>
+
+<a class="toast" id="toast" href="http://localhost:4190/hub/" target="_blank">
+  <span class="av"></span>
+  <span><b>Studio note</b><span>New experiments in the hub weekly</span></span>
+</a>
+
+<main class="sheet">
+
+  <!-- ============ INTRO / THE DIAL ============ -->
+  <section class="intro" id="intro">
+    <h1>Nessim Higson</h1>
+    <p class="role">Design &amp; creative technology.</p>
+    <div class="bio" id="bio"><!-- tokens injected --></div>
+    <p class="dial-hint">
+      <span class="keys"><kbd id="lessK">−</kbd><kbd id="moreK">+</kbd></span>
+      <span>less or more about me</span>
+    </p>
+  </section>
+
+  <!-- ============ LATEST WORK ============ -->
+  <h2 class="label" id="work">Latest Work</h2>
+  <div class="works" id="works">
+    <a class="card" href="#" data-k="wkndr">
+      <span class="fill art-wkndr"></span>
+      <span class="arrow">↗</span>
+      <span class="meta"><b style="color:#1c1b18">WKNDR</b><span style="color:#1c1b18">Weather-native plans for your city</span></span>
+    </a>
+    <a class="card" href="#" data-k="fields">
+      <span class="fill art-fields"></span>
+      <span class="arrow">↗</span>
+      <span class="meta"><b>FIELDS</b><span>A family of generative light engines</span></span>
+    </a>
+    <a class="card" href="#" data-k="arena">
+      <span class="fill art-arena"><i></i></span>
+      <span class="arrow">↗</span>
+      <span class="meta"><b>The Arena</b><span>Living brand systems for an IP studio</span></span>
+    </a>
+    <a class="card" href="#" data-k="fovea">
+      <span class="fill art-fovea"></span>
+      <span class="arrow">↗</span>
+      <span class="meta"><b>FOVEA</b><span>A lens-tunnel portfolio engine</span></span>
+    </a>
+    <a class="card" href="#" data-k="coltrane">
+      <span class="fill art-coltrane"></span>
+      <span class="arrow" style="color:#1c1b18">↗</span>
+      <span class="meta"><b>Coltrane</b><span>A living clock that plays itself</span></span>
+    </a>
+  </div>
+
+  <!-- ============ WRITING / EXPERIMENTS ============ -->
+  <div class="tabs" id="tabs">
+    <button class="on" data-tab="writing">Writing</button>
+    <button data-tab="experiments">Experiments</button>
+  </div>
+  <div class="list" id="list"><!-- rows injected --></div>
+
+</main>
+
+<!-- ============ REVEALED FOOTER ============ -->
+<footer class="footer" id="footer">
+  <div class="big">Always<br><em>hungry.</em></div>
+  <div class="cols">
+    <span><a href="mailto:ness@iamalwayshungry.com">ness@iamalwayshungry.com</a></span>
+    <span class="mut" id="clock">—</span>
+    <span class="mut">Sketch 001 · dial + ask</span>
+  </div>
+</footer>
+
+<!-- ============ DOCK ============ -->
+<div class="dock">
+  <button id="less" title="Less about me">−</button>
+  <div class="dots" id="dots"><i></i><i class="on"></i><i></i><i></i></div>
+  <button id="more" title="More about me">+</button>
+  <div class="sep"></div>
+  <div class="ask" id="askWrap">
+    <input id="ask" type="text" placeholder="Ask this site anything ⌘K" autocomplete="off">
+  </div>
+</div>
+<div class="answer" id="answer"></div>
+
+<script>
+/* ================= THE DIAL — growing bio ================= */
+/* tokens: [text, minLevel] — chips: {c:class, t:label, l:level, href} */
+const BIO = [
+  // p1 — the one-liner (level 1)
+  [
+    {t:"I run",l:1},{c:"iaah",t:"IAAH",l:1,href:"https://iamalwayshungry.com"},
+    {t:"— an independent design practice.",l:1},
+    {t:"I make brands, websites, and interactive systems.",l:1},
+    {t:"Lately they behave more like weather than software.",l:2},
+    {t:"",l:1,end:true}
+  ],
+  // p2 — current work (level 2)
+  [
+    {t:"Right now that means",l:2},
+    {c:"wkndr",t:"WKNDR",l:2,href:"#work",after:", a weather-native city app;"},
+    {c:"fields",t:"FIELDS",l:2,href:"#work",after:", a family of generative light engines;"},
+    {t:"and show systems for",l:2},
+    {c:"arena",t:"THE ARENA",l:2,href:"#work",after:"."}
+  ],
+  // p3 — the long version (level 3)
+  [
+    {t:"Before this I spent two decades art-directing for music, film, and technology —",l:3},
+    {t:"work that taught me that the best interfaces are the ones with an inner life.",l:3},
+    {t:"I prototype daily, write occasionally, and believe every site should be able to answer for itself.",l:3}
+  ]
+];
+
+let level = 1;               // 0..3, default 1
+const bioEl = document.getElementById('bio');
+
+// build DOM once
+BIO.forEach(par=>{
+  const p = document.createElement('p');
+  par.forEach(tok=>{
+    if(tok.end) return;
+    let el;
+    if(tok.c){
+      el = document.createElement('a');
+      el.className = 'chip '+tok.c;
+      el.textContent = tok.t;
+      el.href = tok.href||'#';
+      if(el.href.startsWith('http')) el.target = '_blank';
+      el.dataset.l = tok.l;
+      // wrap in .w so spacing collapses too
+      const w = document.createElement('span');
+      w.className='w'; w.dataset.l=tok.l;
+      w.appendChild(el); w.appendChild(document.createTextNode((tok.after||'')+' '));
+      p.appendChild(w); return;
+    }
+    el = document.createElement('span');
+    el.className = 'w';
+    el.dataset.l = tok.l;
+    el.textContent = tok.t + ' ';
+    p.appendChild(el);
+  });
+  bioEl.appendChild(p);
+});
+
+function renderLevel(){
+  let inIdx=0, outIdx=0;
+  document.querySelectorAll('#bio .w').forEach(w=>{
+    const show = level>0 && +w.dataset.l<=level;
+    if(show && w.classList.contains('hid')){ w.style.setProperty('--i',inIdx++); }
+    if(!show && !w.classList.contains('hid')){ w.style.setProperty('--j',outIdx++); }
+    w.classList.toggle('hid',!show);
+  });
+  document.querySelectorAll('#dots i').forEach((d,i)=>d.classList.toggle('on',i===level));
+  document.getElementById('less').disabled = level===0;
+  document.getElementById('more').disabled = level===3;
+}
+function setLevel(n){ level = Math.max(0,Math.min(3,n)); renderLevel(); }
+
+document.getElementById('less').onclick = ()=>setLevel(level-1);
+document.getElementById('more').onclick = ()=>setLevel(level+1);
+document.getElementById('lessK').onclick = ()=>setLevel(level-1);
+document.getElementById('moreK').onclick = ()=>setLevel(level+1);
+window.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key==='-'||e.key==='_')setLevel(level-1);
+  if(e.key==='+'||e.key==='=')setLevel(level+1);
+});
+renderLevel();
+
+/* ================= TOAST ================= */
+setTimeout(()=>document.getElementById('toast').classList.add('in'),900);
+window.addEventListener('scroll',()=>{
+  document.getElementById('toast').classList.toggle('in', window.scrollY<300);
+},{passive:true});
+
+/* ================= WORK SCROLLER — drag ================= */
+const works = document.getElementById('works');
+let dragging=false,startX=0,startL=0,moved=0;
+works.addEventListener('pointerdown',e=>{dragging=true;moved=0;startX=e.clientX;startL=works.scrollLeft;works.classList.add('drag')});
+window.addEventListener('pointermove',e=>{if(!dragging)return;const d=e.clientX-startX;moved=Math.max(moved,Math.abs(d));works.scrollLeft=startL-d});
+window.addEventListener('pointerup',()=>{dragging=false;works.classList.remove('drag')});
+works.addEventListener('click',e=>{if(moved>6)e.preventDefault()},true);
+
+/* ================= TABS ================= */
+const DATA = {
+  writing:[
+    ["Weather as interface","Essay · 2026"],
+    ["Sites that answer back","Thesis · 2026"],
+    ["Breeding letterforms","Notes · 2025"],
+    ["The reframe lathe","Essay · 2025"],
+    ["Grids that breathe","Notes · 2025"]
+  ],
+  experiments:[
+    ["Orb Studies","Nav R&D · 2026"],
+    ["TYPEFORGE","Type invention · 2026"],
+    ["UNIQLOCK v2","Living clock · 2025"],
+    ["Kunumi Nav","Physics tree · 2025"],
+    ["Vincent Lowe lens","GLSL teardown · 2025"],
+    ["Ideation Engine","Idea tooling · 2026"]
+  ]
+};
+const list = document.getElementById('list');
+function renderTab(name){
+  list.innerHTML='';
+  DATA[name].forEach(([t,meta])=>{
+    const a=document.createElement('a');
+    a.className='row';a.href='#';
+    a.innerHTML=`<b>${t}</b><span>${meta}</span>`;
+    list.appendChild(a);
+  });
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.tab===name));
+}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>renderTab(b.dataset.tab));
+renderTab('writing');
+
+/* ================= CLOCK ================= */
+function tick(){
+  document.getElementById('clock').textContent =
+    new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) + ' local';
+}
+tick(); setInterval(tick,30000);
+
+/* ================= ASK THE SITE ================= */
+const ask = document.getElementById('ask');
+const askWrap = document.getElementById('askWrap');
+const answerEl = document.getElementById('answer');
+let answerTimer;
+
+ask.addEventListener('focus',()=>askWrap.classList.add('wide'));
+ask.addEventListener('blur',()=>askWrap.classList.remove('wide'));
+window.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();ask.focus();}
+  if(e.key==='Escape'){ask.blur();hideAnswer();}
+});
+
+function showAnswer(text){
+  clearTimeout(answerTimer);
+  answerEl.textContent = text;
+  answerEl.classList.add('in');
+  answerTimer = setTimeout(hideAnswer, 7000);
+}
+function hideAnswer(){ answerEl.classList.remove('in'); }
+
+function highlightBio(){
+  const ws=[...document.querySelectorAll('#bio .w:not(.hid)')];
+  ws.forEach((w,i)=>setTimeout(()=>w.classList.add('hl'),400+i*30));
+  setTimeout(()=>ws.forEach(w=>w.classList.remove('hl')),4200);
+}
+function goCard(k){
+  const c=document.querySelector(`.card[data-k="${k}"]`);
+  document.getElementById('work').scrollIntoView({behavior:'smooth'});
+  c.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+  c.classList.remove('pulse');void c.offsetWidth;c.classList.add('pulse');
+}
+
+const KB = [
+  {k:['who','about','background','story','bio','yourself','do you do'],
+   a:"The long version — expanded above.",
+   run:()=>{ setLevel(3); document.getElementById('intro').scrollIntoView({behavior:'smooth'}); highlightBio(); }},
+  {k:['wkndr','weather','city app','weekend'],
+   a:"WKNDR — a weather-native way to plan your city. Shown below.",
+   run:()=>goCard('wkndr')},
+  {k:['fields','generative','spectra','light'],
+   a:"FIELDS — generative light-leak engines. Take a look.",
+   run:()=>goCard('fields')},
+  {k:['arena'],
+   a:"The Arena — living brand systems for an IP studio.",
+   run:()=>goCard('arena')},
+  {k:['fovea','portfolio engine','lens'],
+   a:"FOVEA — a lens-tunnel engine for showing work.",
+   run:()=>goCard('fovea')},
+  {k:['coltrane','clock','music'],
+   a:"Coltrane — a clock that plays itself.",
+   run:()=>goCard('coltrane')},
+  {k:['contact','email','reach','hire','available','work together','collab'],
+   a:"ness@iamalwayshungry.com — the footer has the rest.",
+   run:()=>window.scrollTo({top:document.body.scrollHeight,behavior:'smooth'})},
+  {k:['write','writing','essay','read'],
+   a:"Recent writing, below.",
+   run:()=>{renderTab('writing');document.getElementById('tabs').scrollIntoView({behavior:'smooth'})}},
+  {k:['experiment','lab','play','prototype','toys'],
+   a:"The lab — everything half-finished on purpose.",
+   run:()=>{renderTab('experiments');document.getElementById('tabs').scrollIntoView({behavior:'smooth'})}},
+  {k:['site','built','how does this','stack'],
+   a:"Vanilla HTML/CSS/JS. The dial borrows from nternet.company; the quiet from marvinschwaibold.com.",
+   run:()=>{}},
+];
+
+ask.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const q = ask.value.trim().toLowerCase();
+  if(!q)return;
+  const hit = KB.find(entry=>entry.k.some(k=>q.includes(k)));
+  if(hit){ showAnswer(hit.a); hit.run(); }
+  else showAnswer("Not sure yet — try “what do you do”, “show me WKNDR”, or “how do I reach you”.");
+  ask.value='';
+  ask.blur();
+});
+</script>
+</body>
+</html>
