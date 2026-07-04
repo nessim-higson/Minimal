@@ -51,6 +51,10 @@ html:not(.ready) .bio .w{opacity:0;filter:blur(4px)}
   box-shadow:0 44px 80px -10px rgba(0,0,0,.6),
              inset 0 -1px 0 rgba(255,255,255,.55);
   padding-bottom:8rem;
+  /* lift-off: JS drives transform/radius/shadow per frame — no CSS transition
+     here or it lags behind the scroll */
+  transform-origin:50% 100%;
+  will-change:transform;
 }
 
 /* =============== "Questions?" pill (top) =============== */
@@ -157,9 +161,10 @@ html:not(.ready) .island{--iy:-84px}
 
 .intro .role{color:var(--mut)}
 .bio{margin-top:2.4em}
+.bio:empty,.bio.allempty{margin-top:0}
 .bio p{margin:0}
 .bio p.gap{margin-top:1.35em}
-.bio p.gap.empty{margin-top:0}
+.bio p.empty{display:none}
 
 .w{
   font-size:var(--fs);opacity:1;filter:blur(0);

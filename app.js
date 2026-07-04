@@ -27,8 +27,8 @@ $("#buildtag").textContent = C.footer.tag;
 $("#big").innerHTML = `${C.footer.big[0]}<br><em>${C.footer.big[1]}</em>`;
 
 /* ================= INLINE DIAL (by the name) ================= */
-/* levels 1..3 — level 1 is the always-on one-liner; + reveals more */
-const LMIN = 1, LMAX = 3;
+/* levels 0..3 — level 0 is uber-minimal (name + role only); + reveals more */
+const LMIN = 0, LMAX = 3;
 let level = LMIN;
 const bioEl = $("#bio");
 const less = $("#less"), more = $("#more");
@@ -69,7 +69,8 @@ function renderLevel() {
     if (!show && was) w.style.setProperty("--i", (j++ * 7) + "ms");
     w.classList.toggle("hid", !show);
   });
-  $$("#bio p.gap").forEach(p => p.classList.toggle("empty", +p.dataset.min > level));
+  $$("#bio p").forEach(p => p.classList.toggle("empty", +p.dataset.min > level));
+  bioEl.classList.toggle("allempty", level < 1);
 
   // + hides at max; − appears (with a pop) only once expanded
   const showLess = level > LMIN, showMore = level < LMAX;
@@ -162,14 +163,26 @@ $$(".wcard, .tile").forEach(el => io.observe(el));
 const labHead = $("#lab-head");
 const island = $("#island");
 const room = $(".room");
+const sheet = $(".sheet");
 function paintLift() {
   const rect = room.getBoundingClientRect();
-  // p: 0 when the room top is at the viewport bottom, 1 once fully in
-  const p = clamp((innerHeight - rect.top) / innerHeight, 0, 1);
+  // p: 0 when the room top sits at the viewport bottom, 1 once it reaches the top.
+  // This is the window where the writing tail is on screen and the sheet lifts off.
+  const p = clamp((innerHeight - rect.top) / (innerHeight * 0.85), 0, 1);
   if (!reduced) {
-    const push = (1 - p) * 70;
+    const e = p * p;                                   // ease-in the lift
+    const lift = e * 132;                              // sheet rises faster than the room
+    const scale = 1 - p * 0.055;                       // and shrinks toward its bottom edge
+    const rad = (40 + p * 40) | 0;
+    sheet.style.transform = `translateY(${(-lift).toFixed(1)}px) scale(${scale.toFixed(4)})`;
+    sheet.style.borderRadius = `0 0 ${rad}px ${rad}px`;
+    sheet.style.boxShadow =
+      `0 ${(44 + p * 36) | 0}px ${(80 + p * 50) | 0}px -10px rgba(0,0,0,${(0.6 + p * 0.28).toFixed(2)}),`
+      + ` inset 0 -1px 0 rgba(255,255,255,.55)`;
+    // the dark room rises up from under the lifting card
+    const push = (1 - p) * 54;
     labHead.style.transform = `translateY(${push.toFixed(1)}px)`;
-    masonry.style.transform = `translateY(${(push * 1.35).toFixed(1)}px)`;
+    masonry.style.transform = `translateY(${(push * 1.3).toFixed(1)}px)`;
   }
   // pill adapts to the dark room behind it
   island.classList.toggle("dusk", rect.top <= 58);
