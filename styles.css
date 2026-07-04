@@ -53,8 +53,9 @@ html:not(.ready) .bio .w{opacity:0;filter:blur(4px)}
              0 2px 0 0 rgba(255,255,255,.9),
              inset 0 -1px 0 rgba(255,255,255,.6);
   padding-bottom:8rem;
-  /* JS drives only a vertical peel (translateY) per frame — no scale, so the
-     sheet stays full-width like Marvin's. No CSS transition or it lags. */
+  /* JS drives the lift per frame (translate + bottom-anchored scale + radius
+     + shadow). No CSS transition here or it lags behind the scroll. */
+  transform-origin:50% 100%;
   will-change:transform;
 }
 /* the fixed dark backdrop the sheet lifts off — nailed to the viewport so the
@@ -162,13 +163,20 @@ html:not(.ready) .island{--iy:-84px}
 .dialctl button[hidden]{display:none}
 .dialctl button.pop{animation:pop .4s var(--spring)}
 @keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.dialctl button.nudge{animation:nudge .55s var(--spring)}
+@keyframes nudge{0%,100%{transform:scale(1)}40%{transform:scale(1.28)}}
 
 .intro .role{color:var(--mut)}
-.bio{margin-top:2.4em}
-.bio:empty,.bio.allempty{margin-top:0}
-.bio p{margin:0}
+/* paragraph collapse rides the same font-size squeeze as the tokens — never
+   display:none (kills the animation). Zeroing the p font-size collapses its
+   line-box strut so empty paragraphs take no space, animatedly. */
+.bio{margin-top:2.4em;transition:margin-top .5s var(--ease)}
+.bio.allempty{margin-top:0}
+.bio p{margin:0;font-size:var(--fs);
+  transition:font-size .5s var(--ease),margin-top .5s var(--ease)}
 .bio p.gap{margin-top:1.35em}
-.bio p.empty{display:none}
+.bio p.empty{font-size:0px}
+.bio p.gap.empty{margin-top:0}
 
 .w{
   font-size:var(--fs);opacity:1;filter:blur(0);

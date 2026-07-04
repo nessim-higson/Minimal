@@ -80,7 +80,7 @@ window.CONTENT = {
 
   footer: {
     email: "ness@iamalwayshungry.com",
-    tag: "Minimal · build 006"
+    tag: "Minimal · build 007"
   },
 
   /* ---- ask the site ----

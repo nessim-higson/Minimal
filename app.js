@@ -88,6 +88,13 @@ addEventListener("keydown", e => {
   if (e.key === "+" || e.key === "=") setLevel(level + 1);
 });
 renderLevel();
+/* a small hello: the + bounces once after the name settles */
+setTimeout(() => {
+  if (!more.hidden && !reduced) {
+    more.classList.add("nudge");
+    more.addEventListener("animationend", () => more.classList.remove("nudge"), { once: true });
+  }
+}, 1700);
 
 /* ================= WORK CAROUSEL ================= */
 const works = $("#works");
@@ -167,18 +174,22 @@ function paintLift() {
   const rect = room.getBoundingClientRect();
   // p: 0 when the room top sits at the viewport bottom, 1 once it reaches the top.
   // This is the window where the writing tail is on screen and the sheet lifts off.
-  const p = clamp((innerHeight - rect.top) / (innerHeight * 0.9), 0, 1);
+  const p = clamp((innerHeight - rect.top) / (innerHeight * 0.95), 0, 1);
   if (!reduced) {
-    // vertical-only peel: the full-width sheet lifts a touch faster than the
-    // room scrolls, opening a dark gap beneath it — a card lifting off, not a
-    // shrinking box. Radius grows slightly as it lifts. No horizontal scale.
-    const e = p * p;                                   // ease-in
-    const lift = e * 90;
-    const rad = (40 + p * 16) | 0;
-    sheet.style.transform = `translate3d(0,${(-lift).toFixed(1)}px,0)`;
+    // the card lift: as the sheet's end approaches, it visibly shrinks toward
+    // its bottom edge, rises faster than the scroll, corners round further and
+    // the shadow deepens — a card being lifted off the dark surface beneath.
+    const e = p * p * (3 - 2 * p);                     // smoothstep — felt early
+    const lift = e * 120;
+    const scale = 1 - e * 0.05;
+    const rad = Math.round(40 + e * 28);
+    sheet.style.transform = `translate3d(0,${(-lift).toFixed(1)}px,0) scale(${scale.toFixed(4)})`;
     sheet.style.borderRadius = `0 0 ${rad}px ${rad}px`;
-    // the dark room content rises gently from under the lifting card
-    const push = (1 - p) * 30;
+    sheet.style.boxShadow =
+      `0 ${Math.round(40 + e * 40)}px ${Math.round(64 + e * 56)}px -14px rgba(0,0,0,${(0.55 + e * 0.3).toFixed(2)}),` +
+      ` 0 2px 0 0 rgba(255,255,255,.9), inset 0 -1px 0 rgba(255,255,255,.6)`;
+    // the dark room rises gently from under the lifting card
+    const push = (1 - e) * 44;
     labHead.style.transform = `translateY(${push.toFixed(1)}px)`;
     masonry.style.transform = `translateY(${(push * 1.25).toFixed(1)}px)`;
   }
