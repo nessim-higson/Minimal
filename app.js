@@ -14,6 +14,8 @@ const ready = () => requestAnimationFrame(() =>
   requestAnimationFrame(() => document.documentElement.classList.add("ready")));
 (document.fonts?.ready || Promise.resolve()).then(ready);
 setTimeout(ready, 900); // fallback if fonts hang
+// hard fallback: background tabs throttle rAF — never leave content hidden
+setTimeout(() => document.documentElement.classList.add("ready"), 1600);
 
 /* ================= STATIC CONTENT ================= */
 $("#name").textContent = C.name;
