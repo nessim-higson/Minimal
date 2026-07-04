@@ -40,6 +40,12 @@ window.CONTENT = {
     href: "https://nessim-higson.github.io"
   },
 
+  nav: [
+    { label: "Work",    target: "#work" },
+    { label: "Writing", target: "#writing" },
+    { label: "Lab",     target: "#lab" }
+  ],
+
   /* ---- latest work ----
      art = CSS class painting the card (see styles.css) */
   works: [
@@ -50,27 +56,32 @@ window.CONTENT = {
     { k: "coltrane", title: "Coltrane",  line: "A living clock that plays itself",        art: "art-coltrane", dark: false, href: "https://nessim-higson.github.io/coltrane/" }
   ],
 
+  /* writing = tall cover cards on the sheet (Marvin-style); art = CSS class */
   writing: [
-    { title: "Weather as interface",   meta: "Essay · 2026", href: "#" },
-    { title: "Sites that answer back", meta: "Thesis · 2026", href: "#" },
-    { title: "Breeding letterforms",   meta: "Notes · 2025", href: "#" },
-    { title: "The reframe lathe",      meta: "Essay · 2025", href: "#" },
-    { title: "Grids that breathe",     meta: "Notes · 2025", href: "#" }
+    { title: "Weather as interface",   tag: "Essay",  art: "wa-weather", href: "#" },
+    { title: "Sites that answer back", tag: "Thesis", art: "wa-answer",  href: "#" },
+    { title: "Breeding letterforms",   tag: "Notes",  art: "wa-letters", href: "#" },
+    { title: "The reframe lathe",      tag: "Essay",  art: "wa-lathe",   href: "#" },
+    { title: "Grids that breathe",     tag: "Notes",  art: "wa-grids",   href: "#" }
   ],
 
+  /* experiments = dim masonry tiles in the dark under-world revealed by the sheet lift.
+     size: s | m | l controls tile height */
   experiments: [
-    { title: "Orb Studies",       meta: "Nav R&D · 2026",       href: "#" },
-    { title: "TYPEFORGE",         meta: "Type invention · 2026", href: "#" },
-    { title: "UNIQLOCK v2",       meta: "Living clock · 2025",   href: "#" },
-    { title: "Kunumi Nav",        meta: "Physics tree · 2025",   href: "#" },
-    { title: "Vincent Lowe lens", meta: "GLSL teardown · 2025",  href: "#" },
-    { title: "Ideation Engine",   meta: "Idea tooling · 2026",   href: "#" }
+    { title: "Orb Studies",       meta: "Nav R&D · 2026",        art: "la-orbs",     size: "m", href: "https://nessim-higson.github.io" },
+    { title: "TYPEFORGE",         meta: "Type invention · 2026", art: "la-forge",    size: "l", href: "https://nessim-higson.github.io" },
+    { title: "UNIQLOCK v2",       meta: "Living clock · 2025",   art: "la-clock",    size: "s", href: "https://nessim-higson.github.io" },
+    { title: "Coltrane",          meta: "Grid orchestra · 2026", art: "la-coltrane", size: "m", href: "https://nessim-higson.github.io/coltrane/" },
+    { title: "Kunumi Nav",        meta: "Physics tree · 2025",   art: "la-kunumi",   size: "l", href: "https://nessim-higson.github.io" },
+    { title: "Vincent Lowe lens", meta: "GLSL teardown · 2025",  art: "la-lens",     size: "m", href: "https://nessim-higson.github.io" },
+    { title: "Ideation Engine",   meta: "Idea tooling · 2026",   art: "la-ideation", size: "s", href: "https://nessim-higson.github.io" },
+    { title: "Spectra",           meta: "Light leaks · 2026",    art: "la-spectra",  size: "m", href: "https://nessim-higson.github.io/fields/" }
   ],
 
   footer: {
     big: ["Always", "hungry."],
     email: "ness@iamalwayshungry.com",
-    tag: "Minimal · build 002"
+    tag: "Minimal · build 003"
   },
 
   /* ---- ask the site ----
