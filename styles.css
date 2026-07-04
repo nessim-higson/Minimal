@@ -1,6 +1,6 @@
 /* =====================================================
-   MINIMAL — build 003
-   Sheet lifts off into the dark Lab. iOS-fluid island nav.
+   MINIMAL — build 004
+   Inline dial by the name · "Questions?" pill · card lift-off.
    ===================================================== */
 
 :root{
@@ -12,7 +12,7 @@
   --dark:#070706;
   --dark-ink:#f4f1ea;
   --col:34rem;
-  --fs:clamp(17px,1.45vw,20px);      /* body scale — up from 15px */
+  --fs:clamp(17px,1.45vw,20px);
   --fs-s:13.5px;
   --ease:cubic-bezier(.22,.9,.24,1);
   --spring:cubic-bezier(.3,1.25,.4,1);
@@ -39,85 +39,128 @@ a{color:inherit}
   transition-delay:var(--d,0s);
 }
 html.ready [data-rise]{opacity:1;transform:none}
-
-/* word-by-word entrance for the bio (pre-ready state) */
 html:not(.ready) .bio .w{opacity:0;filter:blur(4px)}
 
-/* =============== the sheet =============== */
+/* =============== the sheet + lift-off =============== */
+.stage{position:relative;z-index:2}      /* holds the sheet above the dark room */
 .sheet{
   position:relative;z-index:2;
   background:var(--bg);
-  border-radius:0 0 34px 34px;
-  box-shadow:0 30px 70px rgba(0,0,0,.55);
-  padding-bottom:10rem;
+  border-radius:0 0 40px 40px;
+  /* the card edge: soft drop onto the dark room + a bright top-seam highlight */
+  box-shadow:0 44px 80px -10px rgba(0,0,0,.6),
+             inset 0 -1px 0 rgba(255,255,255,.55);
+  padding-bottom:8rem;
 }
 
-/* =============== island nav (top) =============== */
+/* =============== "Questions?" pill (top) =============== */
 .island{
   position:fixed;top:16px;left:50%;z-index:70;
   transform:translateX(-50%) translateY(var(--iy,0));
-  height:48px;border-radius:24px;
+  height:46px;border-radius:23px;
   background:rgba(255,255,255,.74);
   backdrop-filter:blur(20px) saturate(1.5);
   -webkit-backdrop-filter:blur(20px) saturate(1.5);
   box-shadow:0 8px 32px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06),inset 0 0 0 .5px rgba(255,255,255,.5);
-  overflow:hidden;white-space:nowrap;
-  transition:width .75s var(--spring),background .45s var(--ease),
+  overflow:hidden;
+  display:flex;align-items:center;
+  width:150px;
+  transition:width .55s var(--spring),background .45s var(--ease),
              box-shadow .45s var(--ease),transform .7s var(--spring);
 }
 html:not(.ready) .island{--iy:-84px}
+.island.open{width:min(360px,86vw)}
 
-/* dark-mode adaptivity once you cross into the Lab */
 .island.dusk{
   background:rgba(24,23,21,.66);
   box-shadow:0 8px 32px rgba(0,0,0,.4),inset 0 0 0 .5px rgba(255,255,255,.12);
 }
-.island.dusk .nav-item{color:rgba(244,241,234,.55)}
-.island.dusk .nav-item.on{color:var(--dark-ink)}
-.island.dusk .thumb{background:rgba(255,255,255,.14)}
-.island.dusk .note b{color:var(--dark-ink)}
-.island.dusk .note span{color:rgba(244,241,234,.5)}
+.island.dusk .q-label{color:var(--dark-ink)}
+.island.dusk .ask input{color:var(--dark-ink)}
+.island.dusk .ask input::placeholder{color:rgba(244,241,234,.5)}
 
-/* island layers: note ↔ nav crossfade */
-.island .layer{
-  position:absolute;inset:0;display:flex;align-items:center;
-  padding:0 8px;gap:2px;
-  transition:opacity .4s var(--ease),transform .55s var(--spring);
+/* the pill face */
+.q-pill{
+  position:absolute;inset:0;z-index:2;
+  display:flex;align-items:center;gap:9px;
+  padding:0 20px;border:0;background:none;cursor:pointer;
+  font:inherit;font-size:14px;font-weight:600;color:var(--ink);
+  white-space:nowrap;
+  transition:opacity .3s var(--ease),transform .4s var(--spring);
 }
-.island .note{gap:10px;padding:0 18px 0 8px;text-decoration:none}
-.island .note .av{width:32px;height:32px;border-radius:9px;flex:none;
-  background:conic-gradient(from 200deg,#bfe8ff,#ffe9b8,#ffd2ec,#bfe8ff)}
-.island .note b{display:block;font-size:12px;font-weight:600;line-height:1.25}
-.island .note span{display:block;font-size:12px;color:var(--mut);line-height:1.25}
-.island.mode-nav .note{opacity:0;transform:translateY(-10px);pointer-events:none}
-.island.mode-note .nav{opacity:0;transform:translateY(10px);pointer-events:none}
+.island.open .q-pill{opacity:0;transform:scale(.9);pointer-events:none}
+.q-dot{
+  width:8px;height:8px;border-radius:50%;flex:none;
+  background:var(--marker);
+  box-shadow:0 0 0 0 rgba(255,230,110,.7);
+  animation:ping 2.6s var(--ease) infinite;
+}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(255,230,110,.6)}70%,100%{box-shadow:0 0 0 8px rgba(255,230,110,0)}}
 
-.nav-item{
-  position:relative;z-index:2;
-  font:inherit;font-size:13.5px;font-weight:600;
-  border:0;background:none;cursor:pointer;
-  color:var(--mut);padding:0 14px;height:36px;border-radius:18px;
-  transition:color .35s var(--ease),transform .15s var(--ease);
+/* the ask field (revealed) */
+.ask{
+  flex:1;display:flex;align-items:center;gap:8px;
+  padding:0 8px 0 18px;
+  opacity:0;transform:translateY(8px);pointer-events:none;
+  transition:opacity .35s var(--ease) .1s,transform .45s var(--spring) .1s;
 }
-.nav-item:active{transform:scale(.94)}
-.nav-item.on{color:var(--ink)}
-.thumb{
-  position:absolute;z-index:1;top:6px;height:36px;border-radius:18px;
-  background:rgba(23,22,20,.08);
-  left:var(--tx,8px);width:var(--tw,0px);
-  transition:left .6s var(--spring),width .6s var(--spring),background .45s;
+.island.open .ask{opacity:1;transform:none;pointer-events:auto}
+.ask .q-dot{animation:none;background:var(--ink)}
+.island.dusk .ask .q-dot{background:var(--marker)}
+.ask input{
+  flex:1;height:46px;border:0;outline:0;background:transparent;
+  font:inherit;font-size:14px;color:var(--ink);
 }
+.ask input::placeholder{color:var(--mut)}
+.ask .go{
+  width:32px;height:32px;flex:none;border:0;border-radius:16px;cursor:pointer;
+  background:var(--ink);color:#fff;font-size:15px;display:grid;place-items:center;
+  transition:transform .15s var(--ease);
+}
+.ask .go:active{transform:scale(.9)}
 
-/* =============== intro / dial =============== */
+/* answer strip under the pill */
+.answer{
+  position:fixed;top:74px;left:50%;z-index:69;
+  transform:translate(-50%,-8px) scale(.97);
+  max-width:min(460px,88vw);width:max-content;
+  background:#171614;color:var(--dark-ink);
+  font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.4;
+  padding:11px 18px;border-radius:14px;
+  opacity:0;pointer-events:none;
+  transition:opacity .4s var(--ease),transform .5s var(--spring);
+  box-shadow:0 12px 40px rgba(0,0,0,.28);
+}
+.answer.in{opacity:1;transform:translate(-50%,0) scale(1)}
+.answer .caret{display:inline-block;width:1px;height:.9em;background:var(--dark-ink);
+  vertical-align:-1px;margin-left:1px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* =============== intro / inline dial =============== */
 .intro{max-width:var(--col);margin:0 auto;padding:26vh 24px 0}
-.intro h1{font-size:var(--fs);font-weight:600;letter-spacing:.005em}
+.intro h1{
+  font-size:var(--fs);font-weight:600;letter-spacing:.005em;
+  display:flex;align-items:center;gap:10px;
+}
+.dialctl{display:inline-flex;gap:5px}
+.dialctl button{
+  width:23px;height:23px;border-radius:50%;border:0;cursor:pointer;
+  background:var(--ink);color:#fff;font-size:15px;line-height:1;
+  display:grid;place-items:center;padding:0;
+  transition:transform .2s var(--spring),opacity .3s var(--ease),background .2s;
+}
+.dialctl button:hover{background:#000}
+.dialctl button:active{transform:scale(.85)}
+.dialctl button[hidden]{display:none}
+.dialctl button.pop{animation:pop .4s var(--spring)}
+@keyframes pop{0%{transform:scale(0);opacity:0}60%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+
 .intro .role{color:var(--mut)}
 .bio{margin-top:2.4em}
 .bio p{margin:0}
 .bio p.gap{margin-top:1.35em}
 .bio p.gap.empty{margin-top:0}
 
-/* growing tokens */
 .w{
   font-size:var(--fs);opacity:1;filter:blur(0);
   transition:font-size .5s var(--ease),opacity .5s var(--ease),filter .5s var(--ease);
@@ -126,7 +169,6 @@ html:not(.ready) .island{--iy:-84px}
 .w.hid{font-size:0px;opacity:0;filter:blur(6px)}
 .w.hl{background:linear-gradient(transparent 45%,var(--marker) 45%,var(--marker) 92%,transparent 92%)}
 
-/* inline chips — scaled with the new type */
 .chip{
   display:inline-block;vertical-align:-3.5px;
   height:22px;line-height:22px;
@@ -142,19 +184,6 @@ html:not(.ready) .island{--iy:-84px}
 .chip.wkndr{background:linear-gradient(120deg,#4f9fe8,#8fd0ff)}
 .chip.fields{background:linear-gradient(120deg,#ff7a59,#e83d8f,#7b3df0)}
 .chip.arena{background:#111;color:var(--marker)}
-
-.dial-hint{
-  margin-top:2.2em;font-size:13px;color:var(--mut);
-  display:flex;align-items:center;gap:8px;user-select:none;
-}
-.dial-hint kbd{
-  font-family:inherit;font-size:11.5px;cursor:pointer;
-  border:1px solid var(--line);border-bottom-width:2px;
-  border-radius:5px;padding:1px 7px;background:#fff;
-  transition:transform .12s var(--ease),background .2s;
-}
-.dial-hint kbd:hover{background:var(--marker);border-color:transparent}
-.dial-hint kbd:active{transform:translateY(1px)}
 
 /* =============== section labels =============== */
 .label{
@@ -233,7 +262,7 @@ html:not(.ready) .island{--iy:-84px}
   background-image:radial-gradient(circle,#c9c5ba 1.4px,transparent 1.5px);
   background-size:26px 26px}
 
-/* =============== writing — cover cards on the sheet =============== */
+/* =============== writing shelf =============== */
 .shelf{
   margin-top:2.2rem;
   display:flex;gap:18px;
@@ -261,7 +290,6 @@ html:not(.ready) .island{--iy:-84px}
 .wcard::after{content:'';position:absolute;inset:40% 0 0;z-index:1;
   background:linear-gradient(transparent,rgba(0,0,0,.55))}
 
-/* writing covers — CSS art */
 .wa-weather{background:linear-gradient(180deg,#6db3e8,#dceefb 60%,#f3e6c4)}
 .wa-weather::before{content:'';position:absolute;width:220px;height:90px;top:24%;left:-30px;
   background:radial-gradient(closest-side,rgba(255,255,255,.95),transparent);filter:blur(6px)}
@@ -277,13 +305,16 @@ html:not(.ready) .island{--iy:-84px}
 .wa-grids{background:#faf9f6;
   background-image:linear-gradient(#e3dfd4 1px,transparent 1px),linear-gradient(90deg,#e3dfd4 1px,transparent 1px);
   background-size:24px 24px}
-.wa-letters ~ .meta b,.wa-grids ~ .meta b,.wa-lathe ~ .meta b{color:#fff}
 
-/* =============== the LAB — dark under-world =============== */
-.lab{
+/* =============== the LAB — dark room revealed by the lift =============== */
+.room{
   position:relative;z-index:1;
   background:var(--dark);color:var(--dark-ink);
-  padding:11rem 5vw 7rem;
+  overflow:hidden;
+}
+.lab{padding:8rem 5vw 7rem}
+.lab-head{
+  will-change:transform;               /* parallax target */
 }
 .lab .label{color:var(--dark-ink);margin-top:0}
 .lab .lab-sub{max-width:var(--col);margin:0 auto;padding:0 24px;
@@ -292,6 +323,7 @@ html:not(.ready) .island{--iy:-84px}
   margin-top:3.5rem;
   columns:4 240px;column-gap:18px;
   max-width:1180px;margin-inline:auto;
+  will-change:transform;               /* parallax target */
 }
 .tile{
   position:relative;display:block;break-inside:avoid;
@@ -320,7 +352,6 @@ html:not(.ready) .island{--iy:-84px}
   opacity:0;transition:opacity .35s}
 .tile:hover::after{opacity:1}
 
-/* lab tile art — CSS */
 .la-orbs{background:#101012}
 .la-orbs::before{content:'';position:absolute;inset:0;
   background:radial-gradient(circle at 35% 45%,rgba(140,180,255,.5) 0 18%,transparent 19%),
@@ -355,11 +386,11 @@ html:not(.ready) .island{--iy:-84px}
     radial-gradient(45% 45% at 70% 55%,rgba(123,61,240,.35),transparent 70%);
   filter:blur(24px)}
 
-/* =============== footer (down in the dark) =============== */
+/* =============== footer (in the dark) =============== */
 .footer{
   position:relative;z-index:1;
   background:var(--dark);color:var(--dark-ink);
-  padding:4rem 8vw 120px;
+  padding:4rem 8vw 8rem;
 }
 .footer .big{
   font-size:clamp(44px,8vw,110px);
@@ -372,65 +403,15 @@ html:not(.ready) .island{--iy:-84px}
 .footer .cols a:hover{border-color:var(--dark-ink)}
 .footer .mut{color:rgba(244,241,234,.45)}
 
-/* =============== dock (bottom — dial + ask) =============== */
-.dock{
-  position:fixed;left:50%;bottom:20px;z-index:60;
-  transform:translateX(-50%) translateY(var(--dy,0));
-  display:flex;align-items:center;gap:10px;
-  background:rgba(255,255,255,.92);backdrop-filter:blur(16px);
-  border-radius:18px;padding:9px;
-  box-shadow:0 10px 40px rgba(0,0,0,.18),0 1px 2px rgba(0,0,0,.06);
-  transition:transform .8s var(--spring);
-}
-html:not(.ready) .dock{--dy:120px}
-.dock button{
-  width:38px;height:38px;border-radius:11px;border:0;cursor:pointer;
-  background:#171614;color:#fff;font-size:16px;line-height:1;
-  display:grid;place-items:center;
-  transition:transform .15s var(--ease),opacity .25s;
-}
-.dock button:active{transform:scale(.9)}
-.dock button:disabled{opacity:.25;cursor:default}
-.dots{display:flex;gap:5px;padding:0 2px}
-.dots i{width:5px;height:5px;border-radius:50%;background:#dcd9d2;transition:background .3s,transform .3s var(--spring)}
-.dots i.on{background:#171614;transform:scale(1.25)}
-.dock .sep{width:1px;height:24px;background:var(--line)}
-.ask{width:190px;transition:width .4s var(--ease)}
-.ask input{
-  width:100%;height:38px;border:0;outline:0;background:transparent;
-  font:inherit;font-size:13.5px;color:var(--ink);
-}
-.ask input::placeholder{color:var(--mut);transition:opacity .3s}
-.ask input.swap::placeholder{opacity:0}
-.ask.wide{width:330px}
-
-.answer{
-  position:fixed;left:50%;bottom:90px;z-index:59;
-  transform:translate(-50%,14px) scale(.97);
-  max-width:min(520px,88vw);width:max-content;
-  background:#171614;color:var(--dark-ink);
-  font-family:'Newsreader',serif;font-style:italic;font-size:17px;
-  padding:12px 20px;border-radius:14px;
-  opacity:0;pointer-events:none;
-  transition:opacity .4s var(--ease),transform .5s var(--spring);
-  box-shadow:0 10px 40px rgba(0,0,0,.25);
-}
-.answer.in{opacity:1;transform:translate(-50%,0) scale(1)}
-.answer .caret{display:inline-block;width:1px;height:.9em;background:var(--dark-ink);
-  vertical-align:-1px;margin-left:1px;animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-
 /* =============== responsive + a11y =============== */
 @media (max-width:640px){
   :root{--fs:16.5px}
-  .ask{width:120px}
-  .ask.wide{width:190px}
   .footer{padding-inline:24px}
   .intro{padding-top:20vh}
-  .island .note b,.island .note span{max-width:56vw;overflow:hidden;text-overflow:ellipsis}
 }
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
   html{scroll-behavior:auto}
   .tile{opacity:.9}
+  .lab-head,.masonry{transform:none!important}
 }

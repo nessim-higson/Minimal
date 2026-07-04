@@ -81,7 +81,7 @@ window.CONTENT = {
   footer: {
     big: ["Always", "hungry."],
     email: "ness@iamalwayshungry.com",
-    tag: "Minimal · build 003"
+    tag: "Minimal · build 004"
   },
 
   /* ---- ask the site ----

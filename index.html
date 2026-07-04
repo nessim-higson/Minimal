@@ -11,72 +11,72 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Newsreader:ital,opsz,wght@1,6..72,300..500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css?v=5">
+<link rel="stylesheet" href="styles.css?v=7">
 </head>
 <body>
 
-<!-- island nav — arrives as the studio note, folds into the nav -->
-<nav class="island mode-note" id="island" aria-label="Site">
-  <a class="layer note" id="note" href="#" target="_blank" rel="noopener">
-    <span class="av"></span>
-    <span><b id="note-title"></b><span id="note-line"></span></span>
-  </a>
-  <div class="layer nav" id="nav">
-    <span class="thumb" id="thumb" aria-hidden="true"></span>
-  </div>
-</nav>
-
-<main class="sheet">
-
-  <section class="intro" id="intro">
-    <h1 id="name" data-rise style="--d:.05s"></h1>
-    <p class="role" id="role" data-rise style="--d:.12s"></p>
-    <div class="bio" id="bio" aria-live="polite"></div>
-    <p class="dial-hint" data-rise style="--d:.5s">
-      <span class="keys"><kbd id="lessK" title="Less">−</kbd><kbd id="moreK" title="More">+</kbd></span>
-      <span>less or more about me</span>
-    </p>
-  </section>
-
-  <h2 class="label" id="work" data-rise>Latest Work</h2>
-  <div class="works-wrap">
-    <div class="works" id="works" aria-label="Latest work carousel"></div>
-    <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
-  </div>
-
-  <h2 class="label" id="writing" data-rise>Writing</h2>
-  <div class="shelf" id="shelf" aria-label="Writing"></div>
-
-</main>
-
-<!-- the sheet lifts off into the Lab -->
-<section class="lab" id="lab">
-  <h2 class="label">Experiments &amp; Lab</h2>
-  <p class="lab-sub">Half-finished on purpose. Everything here is alive.</p>
-  <div class="masonry" id="masonry"></div>
-</section>
-
-<footer class="footer">
-  <div class="big" id="big"></div>
-  <div class="cols">
-    <span><a id="email" href="#"></a></span>
-    <span class="mut" id="clock">—</span>
-    <span class="mut" id="buildtag"></span>
-  </div>
-</footer>
-
-<div class="dock" role="group" aria-label="Site controls">
-  <button id="less" title="Less about me" aria-label="Less about me">−</button>
-  <div class="dots" id="dots" aria-hidden="true"><i></i><i class="on"></i><i></i><i></i></div>
-  <button id="more" title="More about me" aria-label="More about me">+</button>
-  <div class="sep"></div>
-  <div class="ask" id="askWrap">
-    <input id="ask" type="text" placeholder="Ask this site anything ⌘K" autocomplete="off" aria-label="Ask this site anything">
+<!-- "Questions?" pill — expands into the ask field -->
+<div class="island" id="island">
+  <button class="q-pill" id="qPill" aria-label="Ask this site a question">
+    <span class="q-dot"></span>
+    <span class="q-label">Questions?</span>
+  </button>
+  <div class="ask" id="ask">
+    <span class="q-dot"></span>
+    <input id="askInput" type="text" placeholder="Ask this site anything…" autocomplete="off" aria-label="Ask this site anything">
+    <button class="go" id="askGo" aria-label="Ask">↵</button>
   </div>
 </div>
 <div class="answer" id="answer" role="status"></div>
 
-<script src="content.js?v=5"></script>
-<script src="app.js?v=5"></script>
+<div class="stage">
+  <main class="sheet">
+
+    <section class="intro" id="intro">
+      <h1 data-rise style="--d:.05s">
+        <span id="name"></span>
+        <span class="dialctl" id="dialctl">
+          <button id="less" aria-label="Less about me" hidden>−</button>
+          <button id="more" aria-label="More about me">+</button>
+        </span>
+      </h1>
+      <p class="role" id="role" data-rise style="--d:.12s"></p>
+      <div class="bio" id="bio" aria-live="polite"></div>
+    </section>
+
+    <h2 class="label" id="work" data-rise>Latest Work</h2>
+    <div class="works-wrap">
+      <div class="works" id="works" aria-label="Latest work carousel"></div>
+      <div class="progress" aria-hidden="true"><i id="progress-bar"></i></div>
+    </div>
+
+    <h2 class="label" id="writing" data-rise>Writing</h2>
+    <div class="shelf" id="shelf" aria-label="Writing"></div>
+
+  </main>
+</div>
+
+<!-- the dark room the sheet lifts off to reveal -->
+<div class="room">
+  <section class="lab" id="lab">
+    <div class="lab-head" id="lab-head">
+      <h2 class="label">Experiments &amp; Lab</h2>
+      <p class="lab-sub">Half-finished on purpose. Everything here is alive.</p>
+    </div>
+    <div class="masonry" id="masonry"></div>
+  </section>
+
+  <footer class="footer">
+    <div class="big" id="big"></div>
+    <div class="cols">
+      <span><a id="email" href="#"></a></span>
+      <span class="mut" id="clock">—</span>
+      <span class="mut" id="buildtag"></span>
+    </div>
+  </footer>
+</div>
+
+<script src="content.js?v=7"></script>
+<script src="app.js?v=7"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 /* =====================================================
-   MINIMAL — build 003
-   island nav · dial · carousel · shelf · lab · ask.
+   MINIMAL — build 004
+   inline dial · "Questions?" pill · card lift-off.
    No dependencies.
    ===================================================== */
 (() => {
@@ -9,13 +9,13 @@ const C = window.CONTENT;
 const $  = s => document.querySelector(s);
 const $$ = s => [...document.querySelectorAll(s)];
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
 
 /* ================= LOAD CHOREOGRAPHY ================= */
 const ready = () => requestAnimationFrame(() =>
   requestAnimationFrame(() => document.documentElement.classList.add("ready")));
 (document.fonts?.ready || Promise.resolve()).then(ready);
-setTimeout(ready, 900); // fallback if fonts hang
-// hard fallback: background tabs throttle rAF — never leave content hidden
+setTimeout(ready, 900);
 setTimeout(() => document.documentElement.classList.add("ready"), 1600);
 
 /* ================= STATIC CONTENT ================= */
@@ -26,66 +26,12 @@ $("#email").href = "mailto:" + C.footer.email;
 $("#buildtag").textContent = C.footer.tag;
 $("#big").innerHTML = `${C.footer.big[0]}<br><em>${C.footer.big[1]}</em>`;
 
-/* ================= ISLAND NAV (Dynamic-Island style) ================= */
-const island = $("#island");
-const navEl = $("#nav");
-const thumb = $("#thumb");
-$("#note-title").textContent = C.toast.title;
-$("#note-line").textContent = C.toast.line;
-$("#note").href = C.toast.href;
-
-C.nav.forEach(item => {
-  const b = document.createElement("button");
-  b.className = "nav-item";
-  b.textContent = item.label;
-  b.dataset.target = item.target;
-  b.onclick = () => document.querySelector(item.target)?.scrollIntoView({ behavior: "smooth" });
-  navEl.insertBefore(b, thumb);
-});
-const navItems = $$(".nav-item");
-
-function sizeIsland(mode) {
-  island.classList.remove("mode-note", "mode-nav");
-  island.classList.add(mode);
-  const layer = mode === "mode-note" ? $("#note") : navEl;
-  // measure the target layer's natural width
-  const prev = layer.style.position;
-  island.style.width = "auto";
-  layer.style.position = "static";
-  const w = layer.scrollWidth + 16;
-  layer.style.position = prev || "";
-  island.style.width = w + "px";
-}
-function setThumb(el) {
-  navItems.forEach(b => b.classList.toggle("on", b === el));
-  if (!el) { thumb.style.setProperty("--tw", "0px"); return; }
-  thumb.style.setProperty("--tx", (el.offsetLeft) + "px");
-  thumb.style.setProperty("--tw", el.offsetWidth + "px");
-}
-
-/* arrive as the studio note, then fold into the nav */
-sizeIsland("mode-note");
-setTimeout(() => { sizeIsland("mode-nav"); setThumb(null); }, 3400);
-addEventListener("resize", () => sizeIsland(island.classList.contains("mode-note") ? "mode-note" : "mode-nav"));
-
-/* scrollspy — thumb glides to the section in view; island goes dusk in the Lab */
-const SPY = [["#work", "Work"], ["#writing", "Writing"], ["#lab", "Lab"]];
-function spy() {
-  const y = scrollY + innerHeight * 0.35;
-  let current = null;
-  SPY.forEach(([sel]) => {
-    const el = document.querySelector(sel);
-    if (el && el.offsetTop <= y) current = sel;
-  });
-  if ($("#intro").offsetTop + $("#intro").offsetHeight * .5 > y) current = null;
-  setThumb(navItems.find(b => b.dataset.target === current) || null);
-  island.classList.toggle("dusk", scrollY + 64 >= $("#lab").offsetTop);
-}
-addEventListener("scroll", () => requestAnimationFrame(spy), { passive: true });
-
-/* ================= THE DIAL ================= */
-let level = 1;
+/* ================= INLINE DIAL (by the name) ================= */
+/* levels 1..3 — level 1 is the always-on one-liner; + reveals more */
+const LMIN = 1, LMAX = 3;
+let level = LMIN;
 const bioEl = $("#bio");
+const less = $("#less"), more = $("#more");
 let tokenCount = 0;
 
 C.bio.forEach((par, pi) => {
@@ -96,7 +42,7 @@ C.bio.forEach((par, pi) => {
     const w = document.createElement("span");
     w.className = "w";
     w.dataset.l = tok.l;
-    w.style.setProperty("--i", (300 + tokenCount++ * 26) + "ms"); // word-by-word entrance
+    w.style.setProperty("--i", (300 + tokenCount++ * 26) + "ms");
     if (tok.chip) {
       const a = document.createElement("a");
       a.className = "chip " + tok.chip;
@@ -104,37 +50,38 @@ C.bio.forEach((par, pi) => {
       a.href = tok.href || "#";
       if (a.getAttribute("href").startsWith("http")) { a.target = "_blank"; a.rel = "noopener"; }
       w.appendChild(a);
-      w.appendChild(document.createTextNode((tok.after || "") + " "));
+      w.appendChild(document.createTextNode((tok.after || "") + " "));
     } else {
-      w.textContent = tok.t + " ";
+      w.textContent = tok.t + " ";
     }
     p.appendChild(w);
   });
   bioEl.appendChild(p);
 });
-/* after the entrance, clear the load delays so the dial feels instant */
 setTimeout(() => $$("#bio .w").forEach(w => w.style.setProperty("--i", "0ms")), 2600);
 
 function renderLevel() {
   let i = 0, j = 0;
   $$("#bio .w").forEach(w => {
-    const show = level > 0 && +w.dataset.l <= level;
+    const show = +w.dataset.l <= level;
     const was = !w.classList.contains("hid");
     if (show && !was) w.style.setProperty("--i", (i++ * 16) + "ms");
     if (!show && was) w.style.setProperty("--i", (j++ * 7) + "ms");
     w.classList.toggle("hid", !show);
   });
   $$("#bio p.gap").forEach(p => p.classList.toggle("empty", +p.dataset.min > level));
-  $$("#dots i").forEach((d, k) => d.classList.toggle("on", k === level));
-  $("#less").disabled = level === 0;
-  $("#more").disabled = level === 3;
-}
-const setLevel = n => { level = Math.max(0, Math.min(3, n)); renderLevel(); };
 
-$("#less").onclick = () => setLevel(level - 1);
-$("#more").onclick = () => setLevel(level + 1);
-$("#lessK").onclick = () => setLevel(level - 1);
-$("#moreK").onclick = () => setLevel(level + 1);
+  // + hides at max; − appears (with a pop) only once expanded
+  const showLess = level > LMIN, showMore = level < LMAX;
+  if (showLess && less.hidden) { less.hidden = false; less.classList.add("pop"); }
+  else if (!showLess) less.hidden = true;
+  if (showMore && more.hidden) { more.hidden = false; more.classList.add("pop"); }
+  else if (!showMore) more.hidden = true;
+}
+const setLevel = n => { level = clamp(n, LMIN, LMAX); renderLevel(); };
+[less, more].forEach(b => b.addEventListener("animationend", () => b.classList.remove("pop")));
+less.onclick = () => setLevel(level - 1);
+more.onclick = () => setLevel(level + 1);
 addEventListener("keydown", e => {
   if (e.target.tagName === "INPUT") return;
   if (e.key === "-" || e.key === "_") setLevel(level - 1);
@@ -204,11 +151,32 @@ C.experiments.forEach((x, i) => {
   masonry.appendChild(a);
 });
 
-/* shared in-view reveal */
 const io = new IntersectionObserver(es => es.forEach(en => {
   if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
 }), { threshold: .18 });
 $$(".wcard, .tile").forEach(el => io.observe(el));
+
+/* ================= CARD LIFT-OFF PARALLAX ================= */
+/* the dark room emerges from *under* the lifting sheet: its content
+   starts pushed down and settles to rest as the sheet edge passes up */
+const labHead = $("#lab-head");
+const island = $("#island");
+const room = $(".room");
+function paintLift() {
+  const rect = room.getBoundingClientRect();
+  // p: 0 when the room top is at the viewport bottom, 1 once fully in
+  const p = clamp((innerHeight - rect.top) / innerHeight, 0, 1);
+  if (!reduced) {
+    const push = (1 - p) * 70;
+    labHead.style.transform = `translateY(${push.toFixed(1)}px)`;
+    masonry.style.transform = `translateY(${(push * 1.35).toFixed(1)}px)`;
+  }
+  // pill adapts to the dark room behind it
+  island.classList.toggle("dusk", rect.top <= 58);
+}
+addEventListener("scroll", () => requestAnimationFrame(paintLift), { passive: true });
+addEventListener("resize", paintLift);
+paintLift();
 
 /* ================= CLOCK ================= */
 function tick() {
@@ -217,29 +185,23 @@ function tick() {
 }
 tick(); setInterval(tick, 30000);
 
-/* ================= ASK THE SITE ================= */
-const ask = $("#ask");
-const askWrap = $("#askWrap");
+/* ================= ASK — the "Questions?" pill ================= */
+const qPill = $("#qPill");
+const askInput = $("#askInput");
+const askGo = $("#askGo");
 const answerEl = $("#answer");
 let hideTimer, typeTimer;
 
-let sug = 0;
-setInterval(() => {
-  if (document.activeElement === ask || ask.value) return;
-  ask.classList.add("swap");
-  setTimeout(() => {
-    sug = (sug + 1) % C.suggestions.length;
-    ask.placeholder = C.suggestions[sug];
-    ask.classList.remove("swap");
-  }, 300);
-}, 4200);
-
-ask.addEventListener("focus", () => askWrap.classList.add("wide"));
-ask.addEventListener("blur", () => askWrap.classList.remove("wide"));
+function openAsk() { island.classList.add("open"); askInput.focus(); }
+function closeAsk() { if (!askInput.value) island.classList.remove("open"); }
+qPill.addEventListener("click", openAsk);
+askInput.addEventListener("blur", () => setTimeout(closeAsk, 120));
 addEventListener("keydown", e => {
-  if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); ask.focus(); }
-  if (e.key === "Escape") { ask.blur(); hideAnswer(); }
+  if ((e.metaKey || e.ctrlKey) && e.key === "k") { e.preventDefault(); openAsk(); }
+  if (e.key === "Escape") { askInput.value = ""; island.classList.remove("open"); hideAnswer(); }
 });
+
+askInput.placeholder = C.suggestions[0];
 
 function showAnswer(text) {
   clearTimeout(hideTimer); clearInterval(typeTimer);
@@ -271,7 +233,7 @@ function goCard(k) {
   c.classList.remove("pulse"); void c.offsetWidth; c.classList.add("pulse");
 }
 const ACTIONS = {
-  level3: () => { setLevel(3); $("#intro").scrollIntoView({ behavior: "smooth" }); highlightBio(); },
+  level3: () => { setLevel(LMAX); $("#intro").scrollIntoView({ behavior: "smooth" }); highlightBio(); },
   footer: () => scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }),
   none:   () => {}
 };
@@ -281,15 +243,16 @@ function runAction(action) {
   if (action === "tab:experiments") return $("#lab").scrollIntoView({ behavior: "smooth" });
   (ACTIONS[action] || ACTIONS.none)();
 }
-
-ask.addEventListener("keydown", e => {
-  if (e.key !== "Enter") return;
-  const q = ask.value.trim().toLowerCase();
+function submitAsk() {
+  const q = askInput.value.trim().toLowerCase();
   if (!q) return;
   const hit = C.kb.find(en => en.k.some(k => q.includes(k)));
   if (hit) { showAnswer(hit.a); runAction(hit.action); }
   else showAnswer(C.fallback);
-  ask.value = "";
-  ask.blur();
-});
+  askInput.value = "";
+  askInput.blur();
+  island.classList.remove("open");
+}
+askGo.addEventListener("click", submitAsk);
+askInput.addEventListener("keydown", e => { if (e.key === "Enter") submitAsk(); });
 })();
