@@ -24,7 +24,6 @@ $("#role").textContent = C.role;
 $("#email").textContent = C.footer.email;
 $("#email").href = "mailto:" + C.footer.email;
 $("#buildtag").textContent = C.footer.tag;
-$("#big").innerHTML = `${C.footer.big[0]}<br><em>${C.footer.big[1]}</em>`;
 
 /* ================= INLINE DIAL (by the name) ================= */
 /* levels 0..3 — level 0 is uber-minimal (name + role only); + reveals more */
@@ -168,21 +167,20 @@ function paintLift() {
   const rect = room.getBoundingClientRect();
   // p: 0 when the room top sits at the viewport bottom, 1 once it reaches the top.
   // This is the window where the writing tail is on screen and the sheet lifts off.
-  const p = clamp((innerHeight - rect.top) / (innerHeight * 0.85), 0, 1);
+  const p = clamp((innerHeight - rect.top) / (innerHeight * 0.9), 0, 1);
   if (!reduced) {
-    const e = p * p;                                   // ease-in the lift
-    const lift = e * 132;                              // sheet rises faster than the room
-    const scale = 1 - p * 0.055;                       // and shrinks toward its bottom edge
-    const rad = (40 + p * 40) | 0;
-    sheet.style.transform = `translateY(${(-lift).toFixed(1)}px) scale(${scale.toFixed(4)})`;
+    // vertical-only peel: the full-width sheet lifts a touch faster than the
+    // room scrolls, opening a dark gap beneath it — a card lifting off, not a
+    // shrinking box. Radius grows slightly as it lifts. No horizontal scale.
+    const e = p * p;                                   // ease-in
+    const lift = e * 90;
+    const rad = (40 + p * 16) | 0;
+    sheet.style.transform = `translate3d(0,${(-lift).toFixed(1)}px,0)`;
     sheet.style.borderRadius = `0 0 ${rad}px ${rad}px`;
-    sheet.style.boxShadow =
-      `0 ${(44 + p * 36) | 0}px ${(80 + p * 50) | 0}px -10px rgba(0,0,0,${(0.6 + p * 0.28).toFixed(2)}),`
-      + ` inset 0 -1px 0 rgba(255,255,255,.55)`;
-    // the dark room rises up from under the lifting card
-    const push = (1 - p) * 54;
+    // the dark room content rises gently from under the lifting card
+    const push = (1 - p) * 30;
     labHead.style.transform = `translateY(${push.toFixed(1)}px)`;
-    masonry.style.transform = `translateY(${(push * 1.3).toFixed(1)}px)`;
+    masonry.style.transform = `translateY(${(push * 1.25).toFixed(1)}px)`;
   }
   // pill adapts to the dark room behind it
   island.classList.toggle("dusk", rect.top <= 58);

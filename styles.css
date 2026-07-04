@@ -47,15 +47,19 @@ html:not(.ready) .bio .w{opacity:0;filter:blur(4px)}
   position:relative;z-index:2;
   background:var(--bg);
   border-radius:0 0 40px 40px;
-  /* the card edge: soft drop onto the dark room + a bright top-seam highlight */
-  box-shadow:0 44px 80px -10px rgba(0,0,0,.6),
-             inset 0 -1px 0 rgba(255,255,255,.55);
+  /* Marvin's exact card edge: a bright lit seam at the bottom + a soft drop
+     onto the fixed dark backdrop behind it */
+  box-shadow:0 40px 64px -14px rgba(0,0,0,.55),
+             0 2px 0 0 rgba(255,255,255,.9),
+             inset 0 -1px 0 rgba(255,255,255,.6);
   padding-bottom:8rem;
-  /* lift-off: JS drives transform/radius/shadow per frame — no CSS transition
-     here or it lags behind the scroll */
-  transform-origin:50% 100%;
+  /* JS drives only a vertical peel (translateY) per frame — no scale, so the
+     sheet stays full-width like Marvin's. No CSS transition or it lags. */
   will-change:transform;
 }
+/* the fixed dark backdrop the sheet lifts off — nailed to the viewport so the
+   card reads as lifting off a surface that stays put */
+.backdrop{position:fixed;inset:0;z-index:0;background:var(--dark);pointer-events:none}
 
 /* =============== "Questions?" pill (top) =============== */
 .island{
@@ -395,15 +399,10 @@ html:not(.ready) .island{--iy:-84px}
 .footer{
   position:relative;z-index:1;
   background:var(--dark);color:var(--dark-ink);
-  padding:4rem 8vw 8rem;
+  padding:5rem 8vw 7rem;
 }
-.footer .big{
-  font-size:clamp(44px,8vw,110px);
-  font-weight:600;letter-spacing:-.03em;line-height:.95;
-}
-.footer .big em{font-family:'Newsreader',serif;font-style:italic;font-weight:400}
 .footer .cols{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
-  font-size:13px;margin-top:4rem;flex-wrap:wrap}
+  font-size:13px;flex-wrap:wrap}
 .footer .cols a{color:var(--dark-ink);text-decoration:none;border-bottom:1px solid rgba(244,241,234,.3);transition:border-color .25s}
 .footer .cols a:hover{border-color:var(--dark-ink)}
 .footer .mut{color:rgba(244,241,234,.45)}
