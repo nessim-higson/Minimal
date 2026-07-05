@@ -12,8 +12,9 @@
   --dark:#070706;
   --dark-ink:#f4f1ea;
   --col:34rem;
-  --gutter:clamp(28px,7vw,132px);   /* single left edge everything hangs off */
-  --measure:33rem;                  /* readable line length for the intro/bio */
+  --content:60rem;                            /* centered content band */
+  --gutter:max(28px,calc((100vw - var(--content))/2)); /* its left edge — the single line everything hangs off */
+  --measure:33rem;                            /* readable line length for the intro/bio */
   --fs:clamp(17px,1.45vw,20px);
   --fs-s:13.5px;
   --ease:cubic-bezier(.22,.9,.24,1);
@@ -36,12 +37,21 @@ a{color:inherit}
 
 /* =============== load choreography =============== */
 [data-rise]{
-  opacity:0;transform:translateY(16px);
-  transition:opacity .85s var(--ease),transform .85s var(--ease);
+  opacity:0;transform:translateY(14px);filter:blur(3px);
+  transition:opacity 1s var(--ease),transform 1s var(--ease),filter 1s var(--ease);
   transition-delay:var(--d,0s);
 }
-html.ready [data-rise]{opacity:1;transform:none}
+html.ready [data-rise]{opacity:1;transform:none;filter:blur(0)}
 html:not(.ready) .bio .w{opacity:0;filter:blur(4px)}
+
+/* =============== scroll reveal (shared) =============== */
+.reveal{
+  opacity:0;transform:translateY(22px);filter:blur(3px);
+  transition:opacity .9s var(--ease) var(--d,0s),
+             transform .9s var(--ease) var(--d,0s),
+             filter .9s var(--ease) var(--d,0s);
+}
+.reveal.in{opacity:1;transform:none;filter:blur(0)}
 
 /* =============== the sheet + lift-off =============== */
 .stage{position:relative;z-index:2}      /* holds the sheet above the dark room */
@@ -65,21 +75,25 @@ html:not(.ready) .bio .w{opacity:0;filter:blur(4px)}
 .backdrop{position:fixed;inset:0;z-index:0;background:var(--dark);pointer-events:none}
 
 /* =============== "Questions?" pill (top) =============== */
+/* lives at the content's left edge and, via JS, rides just above the name
+   until it hits the top of the page — then it anchors there */
 .island{
-  position:fixed;top:16px;left:50%;z-index:70;
-  transform:translateX(-50%) translateY(var(--iy,0));
+  position:fixed;top:16px;left:var(--gutter);z-index:70;
   height:46px;border-radius:23px;
-  background:rgba(255,255,255,.74);
+  background:rgba(255,255,255,.72);
   backdrop-filter:blur(20px) saturate(1.5);
   -webkit-backdrop-filter:blur(20px) saturate(1.5);
-  box-shadow:0 8px 32px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.06),inset 0 0 0 .5px rgba(255,255,255,.5);
+  box-shadow:0 8px 32px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.05),inset 0 0 0 .5px rgba(255,255,255,.5);
   overflow:hidden;
   display:flex;align-items:center;
   width:150px;
+  opacity:0;transform:translateY(6px);
   transition:width .55s var(--spring),background .45s var(--ease),
-             box-shadow .45s var(--ease),transform .7s var(--spring);
+             box-shadow .45s var(--ease),opacity .7s var(--ease),transform .7s var(--ease);
 }
-html:not(.ready) .island{--iy:-84px}
+html.ready .island{opacity:1;transform:none}
+/* softer shadow while anchored at the very top, richer while floating in the hero */
+.island.anchored{box-shadow:0 6px 20px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.05),inset 0 0 0 .5px rgba(255,255,255,.5)}
 .island.open{width:min(360px,86vw)}
 
 .island.dusk{
@@ -130,11 +144,11 @@ html:not(.ready) .island{--iy:-84px}
 }
 .ask .go:active{transform:scale(.9)}
 
-/* answer strip under the pill */
+/* answer strip — JS pins it just below the pill, left-aligned to it */
 .answer{
-  position:fixed;top:74px;left:50%;z-index:69;
-  transform:translate(-50%,-8px) scale(.97);
-  max-width:min(460px,88vw);width:max-content;
+  position:fixed;top:74px;left:var(--gutter);z-index:69;
+  transform:translateY(-8px) scale(.98);transform-origin:0 0;
+  max-width:min(460px,86vw);width:max-content;
   background:#171614;color:var(--dark-ink);
   font-family:'Newsreader',serif;font-style:italic;font-size:16px;line-height:1.4;
   padding:11px 18px;border-radius:14px;
@@ -142,7 +156,7 @@ html:not(.ready) .island{--iy:-84px}
   transition:opacity .4s var(--ease),transform .5s var(--spring);
   box-shadow:0 12px 40px rgba(0,0,0,.28);
 }
-.answer.in{opacity:1;transform:translate(-50%,0) scale(1)}
+.answer.in{opacity:1;transform:translateY(0) scale(1)}
 .answer .caret{display:inline-block;width:1px;height:.9em;background:var(--dark-ink);
   vertical-align:-1px;margin-left:1px;animation:blink 1s steps(1) infinite}
 @keyframes blink{50%{opacity:0}}
@@ -229,11 +243,12 @@ html:not(.ready) .island{--iy:-84px}
   scroll-snap-align:start;scroll-margin-left:var(--gutter);
   color:#fff;text-decoration:none;
   box-shadow:0 2px 8px rgba(0,0,0,.06);
-  opacity:0;transform:translateY(20px);
+  opacity:0;transform:translateY(22px);filter:blur(3px);
   transition:box-shadow .5s var(--ease),
-             transform .8s var(--ease) var(--d,0s),opacity .8s var(--ease) var(--d,0s);
+             transform .9s var(--ease) var(--d,0s),opacity .9s var(--ease) var(--d,0s),
+             filter .9s var(--ease) var(--d,0s);
 }
-.card.in{opacity:1;transform:none}
+.card.in{opacity:1;transform:none;filter:blur(0)}
 .card:hover{box-shadow:0 20px 48px rgba(0,0,0,.16)}
 .card.dark-text{color:var(--ink)}
 .card.pulse{animation:pulse 1.2s ease 2}
@@ -298,10 +313,11 @@ html:not(.ready) .island{--iy:-84px}
   width:218px;height:290px;border-radius:14px;overflow:hidden;
   scroll-snap-align:start;text-decoration:none;color:#fff;
   box-shadow:0 2px 8px rgba(0,0,0,.08);
-  opacity:0;transform:translateY(18px);
-  transition:opacity .8s var(--ease) var(--d,0s),transform .8s var(--ease) var(--d,0s),box-shadow .4s;
+  opacity:0;transform:translateY(20px);filter:blur(3px);
+  transition:opacity .9s var(--ease) var(--d,0s),transform .9s var(--ease) var(--d,0s),
+             filter .9s var(--ease) var(--d,0s),box-shadow .4s;
 }
-.wcard.in{opacity:1;transform:none}
+.wcard.in{opacity:1;transform:none;filter:blur(0)}
 .wcard:hover{box-shadow:0 16px 36px rgba(0,0,0,.2)}
 .wcard .fill{position:absolute;inset:0;transition:transform 1s var(--ease)}
 .wcard:hover .fill{transform:scale(1.05)}
@@ -350,11 +366,11 @@ html:not(.ready) .island{--iy:-84px}
   position:relative;display:block;break-inside:avoid;
   margin-bottom:18px;border-radius:12px;overflow:hidden;
   text-decoration:none;color:var(--dark-ink);
-  opacity:.46;transform:translateY(26px) scale(.985);
-  transition:opacity .8s var(--ease),transform .8s var(--ease);
-  transition-delay:var(--d,0s);
+  opacity:0;transform:translateY(24px) scale(.99);filter:blur(3px);
+  transition:opacity .9s var(--ease) var(--d,0s),transform .9s var(--ease) var(--d,0s),
+             filter .9s var(--ease) var(--d,0s);
 }
-.tile.in{transform:none}
+.tile.in{opacity:.5;transform:none;filter:blur(0)}
 .tile.in:hover{opacity:1}
 .tile .art{display:block;width:100%}
 .tile.s .art{height:180px}
@@ -427,6 +443,7 @@ html:not(.ready) .island{--iy:-84px}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
   html{scroll-behavior:auto}
-  .tile{opacity:.9}
+  .reveal,.card,.wcard{opacity:1!important;transform:none!important;filter:none!important}
+  .tile{opacity:.5!important;transform:none!important;filter:none!important}
   .lab-head,.masonry{transform:none!important}
 }

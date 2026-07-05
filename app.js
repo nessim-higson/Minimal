@@ -154,7 +154,7 @@ C.experiments.forEach((x, i) => {
 const io = new IntersectionObserver(es => es.forEach(en => {
   if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
 }), { threshold: .15, rootMargin: "0px 0px -8% 0px" });
-$$(".card, .wcard, .tile").forEach(el => io.observe(el));
+$$(".card, .wcard, .tile, .reveal").forEach(el => io.observe(el));
 
 /* ================= CARD LIFT-OFF PARALLAX ================= */
 /* the dark room emerges from *under* the lifting sheet: its content
@@ -188,7 +188,25 @@ function paintLift() {
   }
   // pill adapts to the dark room behind it
   island.classList.toggle("dusk", rect.top <= 58);
+  positionPill();
 }
+
+/* the pill rides just above the name until it reaches the top, then anchors */
+const nameEl = $("#name");
+const answerEl = $("#answer");
+function positionPill() {
+  const nr = nameEl.getBoundingClientRect();
+  const top = Math.max(16, nr.top - island.offsetHeight - 16);
+  island.style.top = top.toFixed(1) + "px";
+  island.classList.toggle("anchored", top <= 16.5);
+  if (answerEl.classList.contains("in")) placeAnswer();
+}
+function placeAnswer() {
+  const ir = island.getBoundingClientRect();
+  answerEl.style.top = (ir.bottom + 8).toFixed(1) + "px";
+  answerEl.style.left = ir.left.toFixed(1) + "px";
+}
+
 addEventListener("scroll", () => requestAnimationFrame(paintLift), { passive: true });
 addEventListener("resize", paintLift);
 paintLift();
@@ -204,7 +222,6 @@ tick(); setInterval(tick, 30000);
 const qPill = $("#qPill");
 const askInput = $("#askInput");
 const askGo = $("#askGo");
-const answerEl = $("#answer");
 let hideTimer, typeTimer;
 
 function openAsk() { island.classList.add("open"); askInput.focus(); }
@@ -220,6 +237,7 @@ askInput.placeholder = C.suggestions[0];
 
 function showAnswer(text) {
   clearTimeout(hideTimer); clearInterval(typeTimer);
+  placeAnswer();
   answerEl.classList.add("in");
   if (reduced) { answerEl.textContent = text; }
   else {
