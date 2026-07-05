@@ -12,6 +12,8 @@
   --dark:#070706;
   --dark-ink:#f4f1ea;
   --col:34rem;
+  --gutter:clamp(28px,7vw,132px);   /* single left edge everything hangs off */
+  --measure:33rem;                  /* readable line length for the intro/bio */
   --fs:clamp(17px,1.45vw,20px);
   --fs-s:13.5px;
   --ease:cubic-bezier(.22,.9,.24,1);
@@ -146,7 +148,8 @@ html:not(.ready) .island{--iy:-84px}
 @keyframes blink{50%{opacity:0}}
 
 /* =============== intro / inline dial =============== */
-.intro{max-width:var(--col);margin:0 auto;padding:26vh 24px 0}
+.intro{margin:0;padding:30vh var(--gutter) 0}
+.intro>*{max-width:var(--measure)}
 .intro h1{
   font-size:var(--fs);font-weight:600;letter-spacing:.005em;
   display:flex;align-items:center;gap:10px;
@@ -204,17 +207,17 @@ html:not(.ready) .island{--iy:-84px}
 
 /* =============== section labels =============== */
 .label{
-  max-width:var(--col);margin:9rem auto 0;padding:0 24px;
+  margin:9rem 0 0;padding:0 var(--gutter);
   font-size:var(--fs);font-weight:600;
 }
 
 /* =============== work carousel =============== */
 .works-wrap{position:relative}
 .works{
-  margin-top:2.2rem;
-  display:flex;gap:22px;align-items:center;
-  overflow-x:auto;scroll-snap-type:x mandatory;
-  padding:16px calc(50vw - min(46vw,330px)) 26px;
+  margin-top:1.6rem;
+  display:flex;gap:22px;align-items:flex-start;
+  overflow-x:auto;scroll-snap-type:x proximity;
+  padding:16px var(--gutter) 26px;
   scrollbar-width:none;cursor:grab;
 }
 .works::-webkit-scrollbar{display:none}
@@ -223,13 +226,14 @@ html:not(.ready) .island{--iy:-84px}
   position:relative;flex:0 0 auto;
   width:min(92vw,660px);height:min(58vw,410px);
   border-radius:18px;overflow:hidden;
-  scroll-snap-align:center;
+  scroll-snap-align:start;scroll-margin-left:var(--gutter);
   color:#fff;text-decoration:none;
   box-shadow:0 2px 8px rgba(0,0,0,.06);
-  transform:scale(var(--s,1));
-  transition:box-shadow .5s var(--ease);
-  will-change:transform;
+  opacity:0;transform:translateY(20px);
+  transition:box-shadow .5s var(--ease),
+             transform .8s var(--ease) var(--d,0s),opacity .8s var(--ease) var(--d,0s);
 }
+.card.in{opacity:1;transform:none}
 .card:hover{box-shadow:0 20px 48px rgba(0,0,0,.16)}
 .card.dark-text{color:var(--ink)}
 .card.pulse{animation:pulse 1.2s ease 2}
@@ -281,21 +285,21 @@ html:not(.ready) .island{--iy:-84px}
 
 /* =============== writing shelf =============== */
 .shelf{
-  margin-top:2.2rem;
+  margin-top:1.6rem;
   display:flex;gap:18px;
   overflow-x:auto;scroll-snap-type:x proximity;
-  padding:10px calc(50vw - min(46vw,330px)) 30px;
+  padding:10px var(--gutter) 30px;
   scrollbar-width:none;
 }
+.wcard{scroll-margin-left:var(--gutter)}
 .shelf::-webkit-scrollbar{display:none}
 .wcard{
   position:relative;flex:0 0 auto;
   width:218px;height:290px;border-radius:14px;overflow:hidden;
   scroll-snap-align:start;text-decoration:none;color:#fff;
   box-shadow:0 2px 8px rgba(0,0,0,.08);
-  opacity:0;transform:translateY(22px);
-  transition:opacity .7s var(--ease),transform .7s var(--ease),box-shadow .4s;
-  transition-delay:var(--d,0s);
+  opacity:0;transform:translateY(18px);
+  transition:opacity .8s var(--ease) var(--d,0s),transform .8s var(--ease) var(--d,0s),box-shadow .4s;
 }
 .wcard.in{opacity:1;transform:none}
 .wcard:hover{box-shadow:0 16px 36px rgba(0,0,0,.2)}
@@ -329,17 +333,17 @@ html:not(.ready) .island{--iy:-84px}
   background:var(--dark);color:var(--dark-ink);
   overflow:hidden;
 }
-.lab{padding:8rem 5vw 7rem}
+.lab{padding:8rem var(--gutter) 7rem}
 .lab-head{
   will-change:transform;               /* parallax target */
 }
-.lab .label{color:var(--dark-ink);margin-top:0}
-.lab .lab-sub{max-width:var(--col);margin:0 auto;padding:0 24px;
+.lab .label{color:var(--dark-ink);margin-top:0;padding:0}
+.lab .lab-sub{max-width:var(--measure);margin:.4rem 0 0;padding:0;
   font-size:var(--fs-s);color:rgba(244,241,234,.4)}
 .masonry{
-  margin-top:3.5rem;
+  margin-top:3rem;
   columns:4 240px;column-gap:18px;
-  max-width:1180px;margin-inline:auto;
+  margin-inline:0;
   will-change:transform;               /* parallax target */
 }
 .tile{
@@ -407,7 +411,7 @@ html:not(.ready) .island{--iy:-84px}
 .footer{
   position:relative;z-index:1;
   background:var(--dark);color:var(--dark-ink);
-  padding:5rem 8vw 7rem;
+  padding:5rem var(--gutter) 7rem;
 }
 .footer .cols{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;
   font-size:13px;flex-wrap:wrap}
@@ -417,8 +421,7 @@ html:not(.ready) .island{--iy:-84px}
 
 /* =============== responsive + a11y =============== */
 @media (max-width:640px){
-  :root{--fs:16.5px}
-  .footer{padding-inline:24px}
+  :root{--fs:16.5px;--gutter:24px}
   .intro{padding-top:20vh}
 }
 @media (prefers-reduced-motion:reduce){

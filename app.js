@@ -98,11 +98,12 @@ setTimeout(() => {
 
 /* ================= WORK CAROUSEL ================= */
 const works = $("#works");
-C.works.forEach(w => {
+C.works.forEach((w, i) => {
   const a = document.createElement("a");
   a.className = "card" + (w.dark ? "" : " dark-text");
   a.dataset.k = w.k;
   a.href = w.href;
+  a.style.setProperty("--d", (i * 80) + "ms");
   if (w.href.startsWith("http")) { a.target = "_blank"; a.rel = "noopener"; }
   a.innerHTML = `<span class="fill ${w.art}">${w.k === "arena" ? "<i></i>" : ""}</span>
     <span class="arrow">↗</span>
@@ -116,16 +117,8 @@ addEventListener("pointermove", e => { if (!dragging) return; const d = e.client
 addEventListener("pointerup", () => { dragging = false; works.classList.remove("drag"); });
 works.addEventListener("click", e => { if (moved > 6) e.preventDefault(); }, true);
 
-const cards = $$(".card");
 const bar = $("#progress-bar");
 function paintCarousel() {
-  const mid = innerWidth / 2;
-  cards.forEach(c => {
-    const r = c.getBoundingClientRect();
-    const d = Math.abs(r.left + r.width / 2 - mid);
-    const s = reduced ? 1 : 1 - Math.min(d / innerWidth, 1) * 0.045;
-    c.style.setProperty("--s", s.toFixed(4));
-  });
   const max = works.scrollWidth - works.clientWidth;
   if (max > 0 && bar) bar.style.setProperty("--x", (works.scrollLeft / max * 96).toFixed(1) + "px");
 }
@@ -160,8 +153,8 @@ C.experiments.forEach((x, i) => {
 
 const io = new IntersectionObserver(es => es.forEach(en => {
   if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); }
-}), { threshold: .18 });
-$$(".wcard, .tile").forEach(el => io.observe(el));
+}), { threshold: .15, rootMargin: "0px 0px -8% 0px" });
+$$(".card, .wcard, .tile").forEach(el => io.observe(el));
 
 /* ================= CARD LIFT-OFF PARALLAX ================= */
 /* the dark room emerges from *under* the lifting sheet: its content
